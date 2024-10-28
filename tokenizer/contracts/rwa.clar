@@ -301,3 +301,38 @@
 (define-read-only (get-vote (proposal-id uint) (voter principal))
     (map-get? votes { proposal-id: proposal-id, voter: voter })
 )
+
+(define-read-only (get-price-feed (asset-id uint))
+    (map-get? price-feeds { asset-id: asset-id })
+)
+
+(define-read-only (get-last-claim (asset-id uint) (claimer principal))
+    (default-to u0
+        (get last-claimed-amount
+            (map-get? dividend-claims
+                { asset-id: asset-id, claimer: claimer }
+            )
+        )
+    )
+)
+
+;; Private Functions
+(define-private (get-next-asset-id)
+    (default-to u1
+        (get-last-asset-id)
+    )
+)
+
+(define-private (get-next-proposal-id)
+    (default-to u1
+        (get-last-proposal-id)
+    )
+)
+
+(define-private (get-last-asset-id)
+    none
+)
+
+(define-private (get-last-proposal-id)
+    none
+)
