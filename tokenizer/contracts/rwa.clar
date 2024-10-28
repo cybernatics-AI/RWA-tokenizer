@@ -258,3 +258,46 @@
         (ok true)
     )
 )
+
+;; Price Oracle Integration
+(define-public (update-price (asset-id uint) (new-price uint))
+    (let
+        (
+            (price-feed (unwrap! (get-price-feed asset-id) err-not-found))
+        )
+        (asserts! (is-eq tx-sender (get oracle price-feed)) err-not-authorized)
+        (map-set price-feeds
+            { asset-id: asset-id }
+            (merge price-feed
+                {
+                    price: new-price,
+                    last-updated: block-height
+                }
+            )
+        )
+        (ok true)
+    )
+)
+
+;; Read Functions
+(define-read-only (get-asset-info (asset-id uint))
+    (map-get? assets { asset-id: asset-id })
+)
+
+(define-read-only (get-balance (owner principal) (asset-id uint))
+    (default-to u0
+        (get balance
+            (map-get? token-balances
+                { owner: owner, asset-id: asset-id }
+            )
+        )
+    )
+)
+
+(define-read-only (get-proposal (proposal-id uint))
+    (map-get? proposals { proposal-id: proposal-id })
+)
+
+(define-read-only (get-vote (proposal-id uint) (voter principal))
+    (map-get? votes { proposal-id: proposal-id, voter: voter })
+)
