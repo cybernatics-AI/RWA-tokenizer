@@ -1,4 +1,4 @@
-;; Enhanced Real World Asset Token Contract
+;;Real World Asset Token Contract
 ;; Implements advanced features for real-world asset tokenization
 
 ;; Constants
